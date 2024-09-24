@@ -1,5 +1,6 @@
 "use client"
 import { useState } from "react";
+import PassengerDetails from "./PassengerDetails";
 
 type tripObj = {
   bus_name: string;
@@ -55,6 +56,7 @@ const SeatPlan: React.FC<tripObj> = ({ bus_name, origin, destination, doj, total
     }
 
     return(
+        <>
         <main className="h-auto bg-gray-300 flex fixed shadow-lg shadow-black top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] w-[80%]">
             <div id="bus" className="m-20 flex bg-white h-fit border-2 border-black border-l-8">
                 <div id="driver" className="w-12 border-r-4 border-black bg-white">
@@ -115,6 +117,14 @@ const SeatPlan: React.FC<tripObj> = ({ bus_name, origin, destination, doj, total
                     </div>
             </div>
         </main>
+        {
+        passengerVisibility &&
+        <div>
+            <button onClick={handlePassengerVisible} className="top-0 right-10 fixed font-bold p-1 m-3 text-white bg-red-500 hover:cursor-pointer z-30">X</button>  
+            <PassengerDetails busName={bus_name} origin={origin} destination={destination} doj={doj} stoppages={stoppages} start_time={start_time} fare={fare} seatNos={selectedSeatArr}/>  
+        </div>
+        }
+        </>
     )
 }
 
