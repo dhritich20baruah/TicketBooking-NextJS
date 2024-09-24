@@ -1,6 +1,7 @@
 import { pool } from "../../../../utils/dbConnect";
 import { parseISO, format, addHours } from "date-fns";
 import Link from "next/link";
+import Buses from "./Buses";
 
 export default async function BusList({
   params,
@@ -110,7 +111,34 @@ export default async function BusList({
 
   const distance_from_start = distance_origin.rows[0].distance_from_start
 
-  console.log("total-distance = ",total_distance, "distance from origin = ", distance_from_start)
+  const stopArr = await pool.query(
+    `
+    WITH stop_data AS (
+      SELECT
+        route_name,
+        (stop_data).name AS stop_name,
+        ROW_NUMBER() OVER () AS stop_index
+      FROM bus_routes,
+      UNNEST(distance) AS stop_data
+      WHERE route_name = $3
+    )
+      SELECT array_agg(stop_name)
+      FROM stop_data
+      WHERE stop_index >= (
+        SELECT stop_index
+        FROM stop_data
+        WHERE stop_name = $1
+        LIMIT 1
+    )
+    AND stop_index < (
+      SELECT stop_index
+      FROM stop_data
+      WHERE stop_name = $2
+      LIMIT 1
+    );
+    `,
+    [origin, destination, route_name]
+  )
 
   for (const bus of buses){
     const total_fare = parseFloat(bus.fare) * total_distance;
@@ -139,7 +167,19 @@ export default async function BusList({
     bus.origin = origin;
     bus.destination = destination;
     bus.doj = doj;
+
+    //Fetch booked seats
+    const bookedSeats = await pool.query(
+      `SELECT seat_no FROM journey WHERE bus_name = $1 AND doj = $2 AND stoppages && $3`,
+      [bus.bus_name, doj, stopArr.rows[0].array_agg]
+    )
+
+    bus.bookedSeats = bookedSeats.rows.map((row) => row.seat_no)
   }
 
-  return <main>BusList</main>;
+  return (
+  <main>
+    <Buses buses={buses}/>
+  </main>
+  );
 }
