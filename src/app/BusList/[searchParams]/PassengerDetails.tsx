@@ -1,6 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 type passengerObj = {
   busName: string;
@@ -53,6 +53,8 @@ const PassengerDetails: React.FC<passengerObj> = ({
     }))
   );
 
+  const router = useRouter();
+
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     index: number
@@ -63,16 +65,18 @@ const PassengerDetails: React.FC<passengerObj> = ({
     setFormData(newFormData);
   };
 
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     try{
-        const response = await axios.post("", formData,{
+        const response = await axios.post("/api/bookSeat", formData,{
             headers: {
                 "Content-Type": "application/json"
             }
         })
-        alert("Seat Booked")
-        
+        alert("Seat Booked");
+        const seatNos = response.data.bookingID;
+        router.push("/")
     } catch(error){
         console.log(error)
     }

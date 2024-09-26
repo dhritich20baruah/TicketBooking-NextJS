@@ -43,7 +43,7 @@ const Buses: React.FC<props> = ({ buses }) => {
   const stop = stopArr.slice(start, end)
 
   const handleFare = (total_fare: number, bus_name: string, startTime: string, total_seats: number, booked_Seats: string[]) => {
-    setBookedSeats(bookedSeats)
+    setBookedSeats(booked_Seats)
     setTotalFare(total_fare)
     setTotalSeats(total_seats)
     setBusName(bus_name)

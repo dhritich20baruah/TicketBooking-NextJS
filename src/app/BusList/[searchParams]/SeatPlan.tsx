@@ -18,7 +18,7 @@ const SeatPlan: React.FC<tripObj> = ({ bus_name, origin, destination, doj, total
 
     let right = []
     let left = []
-
+console.log(bookedSeats)
     if(total_seats == 48){
         let half_Seats = total_seats/2
         right = [...Array(half_Seats).keys()].map((i) => i + 1)
@@ -69,7 +69,7 @@ const SeatPlan: React.FC<tripObj> = ({ bus_name, origin, destination, doj, total
 
                             const isSelected = selectedSeatArr.includes(String(item))
                             return(
-                                <div className={`w-[2em] h-[2em] border-l-2 border-4 border-black hover:cursor-pointer hover:bg-orange-600 ${isBooked ? 'bg-indigo-500' : (isSelected ? 'bg-green-600': '')}`}
+                                <div className={`w-[2em] h-[2em] border-l-2 border-4 border-black hover:cursor-pointer hover:bg-orange-600 ${isBooked ? 'bg-red-500' : (isSelected ? 'bg-green-600': '')}`}
                                     key={item}
                                     onClick={()=>handleSeatClick(String(item))}
                                 >
@@ -84,7 +84,7 @@ const SeatPlan: React.FC<tripObj> = ({ bus_name, origin, destination, doj, total
 
                             const isSelected = selectedSeatArr.includes(String(item))
                             return(
-                                <div className={`w-[2em] h-[2em] border-l-2 border-4 border-black hover:cursor-pointer hover:bg-orange-600 ${isBooked ? 'bg-indigo-500' : (isSelected ? 'bg-green-600': '')}`}
+                                <div className={`w-[2em] h-[2em] border-l-2 border-4 border-black hover:cursor-pointer hover:bg-orange-600 ${isBooked ? 'bg-red-500' : (isSelected ? 'bg-green-600': '')}`}
                                 key={item}
                                 onClick={()=>handleSeatClick(String(item))}
                                 >
