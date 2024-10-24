@@ -254,3 +254,29 @@ INSERT INTO buses (
 SELECT seat_no, bus_name FROM journey WHERE doj = '2024-09-02' AND 'Nagaon' = ANY(stoppages) OR 'Dibrugarh' = ANY(stoppages) AND array_position(stoppages, 'Nagaon') < array_position(stoppages, 'Dibrugarh');
 
 SELECT seat_no FROM journey WHERE doj = '2024-09-02' AND 'Nagaon' = ANY(stoppages) AND 'Dibrugarh' = ANY(stoppages) AND array_position(stoppages, 'Nagaon') < array_position(stoppages, 'Dibrugarh') AND bus_name = 'Network Travels';
+
+
+
+ WITH stop_data AS ( --This part creates a temporary result set (stop_data) which
+      SELECT        --Retrieves the route_name and the stops along the route from the bus_routes table.
+        route_name,
+        (stop_data).name AS stop_name,
+        ROW_NUMBER() OVER () AS stop_index --For each stop, it assigns a unique index (ROW_NUMBER() OVER () AS stop_index), and extracts the stop's name ((stop_data).name AS stop_name).
+      FROM bus_routes, 
+      UNNEST(distance) AS stop_data --UNNEST(distance) is used to "explode" the distance array (which holds the stops with their respective distances) into individual rows.
+      WHERE route_name = $3 --the route_name is also used in the query to ensure the stops belong to the specified route.
+    )
+      SELECT array_agg(stop_name) --This part aggregates the stop names between the origin and destination into an array.
+      FROM stop_data
+      WHERE stop_index >= ( --It finds the stop_index for the origin stop and ensures that only stops from the origin (inclusive) onwards are selected.
+        SELECT stop_index
+        FROM stop_data
+        WHERE stop_name = $1
+        LIMIT 1
+    )
+    AND stop_index < ( --It limits the stops to those that come before the destination (exclusive), i.e., only stops between origin and destination are included.
+      SELECT stop_index
+      FROM stop_data
+      WHERE stop_name = $2
+      LIMIT 1
+    );
