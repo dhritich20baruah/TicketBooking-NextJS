@@ -76,7 +76,7 @@ const PassengerDetails: React.FC<passengerObj> = ({
         })
         alert("Seat Booked");
         const seatNos = response.data.bookingID;
-        router.push("/")
+        router.push(`/Payments/${seatNos.join(",")}`)
     } catch(error){
         console.log(error)
     }
